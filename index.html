@@ -3,9 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website</title>
+    <title>Casita Miramar - A Taste of Our Family's Tradition</title>
+    <meta name="description" content="Authentic Puerto Rican cuisine in a historic 1920s villa. Farm-to-table dining featuring traditional 'comida criolla' from grandmother Aurora's recipes.">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ========== CUSTOM TAILWIND CONFIG ========== */
+        @layer base {
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                font-family: 'Lora', serif;
+                color: #1E1E1E;
+                overflow-x: hidden;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Montserrat', sans-serif;
+            }
+        }
+
+        /* ========== ANIMATED TROPICAL BACKGROUND ========== */
+        .tropical-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FEFAE0 0%, #FDFDFD 50%, #FEFAE0 100%);
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Animated gradient waves */
+        .tropical-background::before,
+        .tropical-background::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(96, 108, 56, 0.08) 0%, transparent 70%);
+            animation: wave 25s ease-in-out infinite;
+        }
+
+        .tropical-background::before {
+            top: -50%;
+            left: -50%;
+            animation-delay: 0s;
+        }
+
+        .tropical-background::after {
+            bottom: -50%;
+            right: -50%;
+            animation-delay: -12s;
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            33% {
+                transform: translate(30px, -30px) rotate(120deg) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg) scale(0.9);
+            }
+        }
+
+        /* Canvas for particles */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* ========== NAVIGATION ========== */
+        nav {
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(40, 54, 24, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ========== HERO SECTION ========== */
+        .hero-overlay {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+        }
+
+        .hero-title {
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero-subtitle {
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.3s;
+        }
+
+        .hero-cta {
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.6s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn-primary {
+            background: #BC6C25;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(188, 108, 37, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #A35D1F;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(188, 108, 37, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #FEFAE0;
+            padding: 0.75rem 2rem;
+            border: 2px solid #FEFAE0;
+            border-radius: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #FEFAE0;
+            color: #283618;
+            transform: translateY(-2px);
+        }
+
+        /* ========== IMAGE EFFECTS ========== */
+        .image-hover {
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .image-hover img {
+            transition: transform 0.5s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-hover:hover img {
+            transform: scale(1.1);
+        }
+
+        /* ========== SCROLL ANIMATIONS ========== */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ========== MENU ITEMS ========== */
+        .menu-card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: #283618;
+            color: #FEFAE0;
+        }
+
+        footer a:hover {
+            color: #BC6C25;
+        }
+
+        /* ========== MOBILE MENU ========== */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* ========== CUSTOM COLORS ========== */
+        .text-primary-green { color: #283618; }
+        .text-secondary-cream { color: #FEFAE0; }
+        .text-accent-orange { color: #BC6C25; }
+        .text-secondary-green { color: #606C38; }
+        .bg-primary-green { background-color: #283618; }
+        .bg-secondary-cream { background-color: #FEFAE0; }
+        .bg-accent-orange { background-color: #BC6C25; }
+    </style>
 </head>
 <body>
-    <!-- Content will be added here -->
+
+    <!-- ========== ANIMATED TROPICAL BACKGROUND ========== -->
+    <div class="tropical-background"></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ========== NAVIGATION ========== -->
+    <nav id="navbar" class="fixed w-full top-0 z-50 bg-transparent py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="text-2xl font-light text-secondary-cream">
+                    <a href="#" class="hover:text-accent-orange transition">CASITA MIRAMAR</a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#philosophy" class="text-secondary-cream hover:text-accent-orange transition font-montserrat">Our Story</a>
+                    <a href="#menu" class="text-secondary-cream hover:text-accent-orange transition font-montserrat">Menu</a>
+                    <a href="#contact" class="text-secondary-cream hover:text-accent-orange transition font-montserrat">Contact</a>
+                    <a href="https://resy.com" target="_blank" class="btn-secondary">Reservations</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-secondary-cream">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 h-full w-64 bg-primary-green z-50 md:hidden shadow-2xl">
+        <div class="flex flex-col p-8 space-y-6">
+            <button id="close-menu" class="self-end text-secondary-cream mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <a href="#philosophy" class="text-secondary-cream hover:text-accent-orange transition font-montserrat text-lg mobile-menu-link">Our Story</a>
+            <a href="#menu" class="text-secondary-cream hover:text-accent-orange transition font-montserrat text-lg mobile-menu-link">Menu</a>
+            <a href="#contact" class="text-secondary-cream hover:text-accent-orange transition font-montserrat text-lg mobile-menu-link">Contact</a>
+            <a href="https://resy.com" target="_blank" class="btn-primary text-center">Reservations</a>
+        </div>
+    </div>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="relative h-screen flex items-center justify-center">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="./assets/image_1.webp" alt="Casita Miramar Interior" class="w-full h-full object-cover">
+            <div class="hero-overlay absolute inset-0"></div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-20 text-center px-4">
+            <h1 class="hero-title text-5xl md:text-7xl font-light text-secondary-cream mb-6">
+                CASITA MIRAMAR
+            </h1>
+            <p class="hero-subtitle text-xl md:text-2xl text-secondary-cream mb-8 font-light max-w-2xl mx-auto">
+                A Taste of Our Family's Tradition
+            </p>
+            <div class="hero-cta space-x-4">
+                <a href="https://resy.com" target="_blank" class="btn-primary">Book a Table</a>
+                <a href="#philosophy" class="btn-secondary">Discover Our Story</a>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+            <div class="animate-bounce text-secondary-cream">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== PHILOSOPHY SECTION ========== -->
+    <section id="philosophy" class="py-20 md:py-32 bg-secondary-cream relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center fade-in-section">
+                <!-- Image -->
+                <div class="image-hover">
+                    <img src="./assets/image_0.webp" alt="Casita Miramar Dining Room" class="rounded-lg shadow-2xl">
+                </div>
+
+                <!-- Content -->
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-light text-primary-green mb-6">
+                        Three Generations of Tradition
+                    </h2>
+                    <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                        Welcome to Casita Miramar, where the legacy of authentic Puerto Rican cuisine lives on. Founded in 2010 by Leonardo and Jesús Manuel Pérez, we continue the family tradition started with La Casita Blanca in 1980, honoring grandmother Aurora Ruiz's beloved recipes.
+                    </p>
+                    <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                        Housed in a charming 1920s villa that was once the Hotel Toro, our restaurant offers an intimate dining experience surrounded by antique furnishings and the warmth of genuine Puerto Rican hospitality.
+                    </p>
+                    <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                        Our sister restaurant, La Casita Blanca, recently received the prestigious James Beard Foundation's 'America's Classics Award' — a testament to our family's unwavering commitment to culinary excellence and tradition.
+                    </p>
+                    <a href="#menu" class="btn-primary">Explore Our Menu</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FARM TO TABLE SECTION ========== -->
+    <section class="py-20 md:py-32 bg-white relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center fade-in-section">
+                <!-- Content (Text First on Mobile) -->
+                <div class="order-2 md:order-1">
+                    <h2 class="text-4xl md:text-5xl font-light text-primary-green mb-6">
+                        From Our Farm to Your Table
+                    </h2>
+                    <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                        At Casita Miramar, we take pride in using the freshest local ingredients, many sourced directly from our family farm in Manatí. This farm-to-table approach ensures every dish bursts with authentic Puerto Rican flavors.
+                    </p>
+                    <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                        Your culinary journey begins with complimentary plantain soup and bacalaítos (codfish fritters), and concludes with a traditional shot of chichaíto — our signature anise and rum digestif.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6 mt-8">
+                        <div>
+                            <h3 class="text-2xl font-normal text-accent-orange mb-2">Fresh & Local</h3>
+                            <p class="text-gray-600">Ingredients from our Manatí farm</p>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-normal text-accent-orange mb-2">Family Recipes</h3>
+                            <p class="text-gray-600">Grandmother Aurora's traditions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image -->
+                <div class="image-hover order-1 md:order-2">
+                    <img src="./assets/image_3.webp" alt="Farm Fresh Ingredients" class="rounded-lg shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FEATURED DISHES SECTION ========== -->
+    <section id="menu" class="py-20 md:py-32 bg-secondary-cream relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16 fade-in-section">
+                <h2 class="text-4xl md:text-5xl font-light text-primary-green mb-4">
+                    Featured Dishes
+                </h2>
+                <p class="text-lg text-secondary-green max-w-2xl mx-auto">
+                    Our menu changes daily, featuring the freshest ingredients and traditional Puerto Rican flavors. Here are some of our beloved specialties.
+                </p>
+            </div>
+
+            <!-- Dishes Grid -->
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Dish 1 -->
+                <div class="menu-card fade-in-section">
+                    <div class="image-hover h-64">
+                        <img src="./assets/image_2.webp" alt="Traditional Appetizer" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-normal text-primary-green mb-3">Mofongo</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Our signature mashed plantain dish, served with your choice of savory filling and traditional garlic sauce.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dish 2 -->
+                <div class="menu-card fade-in-section">
+                    <div class="image-hover h-64">
+                        <img src="./assets/image_4.webp" alt="Signature Cocktail" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-normal text-primary-green mb-3">Fresh Local Fish</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Daily catch prepared in traditional Puerto Rican style with local herbs and our signature sofrito.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dish 3 -->
+                <div class="menu-card fade-in-section">
+                    <div class="image-hover h-64">
+                        <img src="./assets/image_5.webp" alt="Traditional Cocktail" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-normal text-primary-green mb-3">Pastelón</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Puerto Rican lasagna made with sweet plantains, savory beef, and melted cheese — pure comfort food.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Note -->
+            <div class="text-center mt-12 fade-in-section">
+                <p class="text-lg text-secondary-green mb-6">
+                    Our full menu is presented on a chalkboard and changes based on seasonal availability and fresh daily ingredients.
+                </p>
+                <a href="https://resy.com" target="_blank" class="btn-primary">Reserve Your Table</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== EXPERIENCE SECTION ========== -->
+    <section class="py-20 md:py-32 bg-white relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in-section">
+                <h2 class="text-4xl md:text-5xl font-light text-primary-green mb-4">
+                    The Casita Experience
+                </h2>
+                <p class="text-lg text-secondary-green max-w-2xl mx-auto">
+                    More than a meal — it's a journey through Puerto Rican culture and family tradition.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="text-center fade-in-section">
+                    <div class="bg-secondary-cream rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-normal text-primary-green mb-3">Historic Villa</h3>
+                    <p class="text-gray-600">
+                        Dine in a beautifully preserved 1920s building with charming antique décor.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="text-center fade-in-section">
+                    <div class="bg-secondary-cream rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-normal text-primary-green mb-3">Family Atmosphere</h3>
+                    <p class="text-gray-600">
+                        Warm hospitality that makes every guest feel like part of the family.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="text-center fade-in-section">
+                    <div class="bg-secondary-cream rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-12 h-12 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-normal text-primary-green mb-3">Award-Winning Legacy</h3>
+                    <p class="text-gray-600">
+                        Sister to James Beard Award-winning La Casita Blanca.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CONTACT / FOOTER SECTION ========== -->
+    <footer id="contact" class="py-16 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-12">
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-2xl font-normal text-secondary-cream mb-6">Visit Us</h3>
+                    <div class="space-y-4 text-secondary-cream">
+                        <p>
+                            <strong>Address:</strong><br>
+                            605 Av. Miramar<br>
+                            San Juan, 00907<br>
+                            Puerto Rico
+                        </p>
+                        <p>
+                            <strong>Phone:</strong><br>
+                            <a href="tel:787-200-8227" class="hover:text-accent-orange transition">787-200-8227</a>
+                        </p>
+                        <p>
+                            <strong>Email:</strong><br>
+                            <a href="mailto:casitamiramarpr@gmail.com" class="hover:text-accent-orange transition">casitamiramarpr@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Hours & Links -->
+                <div>
+                    <h3 class="text-2xl font-normal text-secondary-cream mb-6">Hours</h3>
+                    <div class="space-y-2 text-secondary-cream mb-6">
+                        <p>Tuesday - Sunday</p>
+                        <p>11:30 AM - 8:00 PM</p>
+                        <p class="text-sm text-gray-400 mt-4">*Hours may vary. Please call ahead.</p>
+                    </div>
+                    <div class="mt-8">
+                        <a href="https://www.casita-miramar.com/" target="_blank" class="text-secondary-cream hover:text-accent-orange transition block mb-2">
+                            Visit Our Sister Restaurant: La Casita Blanca
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Reservations -->
+                <div>
+                    <h3 class="text-2xl font-normal text-secondary-cream mb-6">Reserve Your Table</h3>
+                    <p class="text-secondary-cream mb-6">
+                        Experience authentic Puerto Rican cuisine in our historic villa. Book your table today!
+                    </p>
+                    <a href="https://resy.com" target="_blank" class="btn-primary block text-center">
+                        Make a Reservation
+                    </a>
+
+                    <!-- Social Media (Placeholder) -->
+                    <div class="mt-8 flex space-x-4">
+                        <a href="#" class="text-secondary-cream hover:text-accent-orange transition">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-secondary-cream hover:text-accent-orange transition">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-gray-600 mt-12 pt-8 text-center text-secondary-cream">
+                <p>&copy; 2025 Casita Miramar. All rights reserved. | A family tradition since 1980</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // ========== NAVIGATION SCROLL EFFECT ==========
+        const navbar = document.getElementById('navbar');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ========== MOBILE MENU ==========
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMenu = document.getElementById('close-menu');
+        const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+        });
+
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        // ========== SCROLL ANIMATIONS ==========
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // ========== CANVAS PARTICLE ANIMATION ==========
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Particle class for tropical botanical elements (leaves/petals)
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 5 + 2.5;
+                this.speedX = Math.random() * 0.6 - 0.3;
+                this.speedY = Math.random() * 0.6 - 0.3;
+                this.opacity = Math.random() * 0.35 + 0.3;
+                this.color = [
+                    'rgba(96, 108, 56, 0.5)',    // Primary green
+                    'rgba(188, 108, 37, 0.45)',  // Accent orange
+                    'rgba(40, 54, 24, 0.4)',     // Dark green
+                    'rgba(254, 250, 224, 0.6)'   // Cream
+                ][Math.floor(Math.random() * 4)];
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.018;
+                this.type = Math.random() > 0.5 ? 'leaf' : 'petal';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+
+                // Gentle wave motion for organic feel
+                this.x += Math.sin(Date.now() * 0.0008 + this.y * 0.01) * 0.25;
+                this.y += Math.cos(Date.now() * 0.0008 + this.x * 0.01) * 0.25;
+
+                // Wrap around edges
+                if (this.x < -20) this.x = canvas.width + 20;
+                if (this.x > canvas.width + 20) this.x = -20;
+                if (this.y < -20) this.y = canvas.height + 20;
+                if (this.y > canvas.height + 20) this.y = -20;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity;
+
+                if (this.type === 'leaf') {
+                    // Draw tropical leaf shape
+                    ctx.beginPath();
+                    ctx.moveTo(0, -this.size);
+                    ctx.quadraticCurveTo(this.size * 0.8, -this.size * 0.3, this.size * 0.6, this.size * 0.9);
+                    ctx.quadraticCurveTo(0, this.size * 0.6, -this.size * 0.6, this.size * 0.9);
+                    ctx.quadraticCurveTo(-this.size * 0.8, -this.size * 0.3, 0, -this.size);
+                    ctx.closePath();
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                } else {
+                    // Draw petal/flower shape
+                    ctx.beginPath();
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (Math.PI * 2 * i) / 5;
+                        const x = Math.cos(angle) * this.size;
+                        const y = Math.sin(angle) * this.size * 1.4;
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Create particles - more on desktop, fewer on mobile
+        const particles = [];
+        const particleCount = window.innerWidth < 768 ? 35 : 55;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        // Animation loop
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+
+        // ========== SMOOTH SCROLLING ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>
